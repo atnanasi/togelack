@@ -43,9 +43,6 @@ class MessageDecorator < Draper::Decorator
         attachment
       when nil # 指定なし(通常テキスト)
         if attachment[:title] || attachment[:text]
-          if attachment[:title_link]
-            attachment[:title_link] = "https://slack-redir.net/link?url=#{URI.encode attachment[:title_link]}"
-          end
           attachment
         elsif attachment[:image_url]
           attachment[:service_name] = 'togelack-image'
@@ -67,8 +64,7 @@ class MessageDecorator < Draper::Decorator
 
   def self.processor
     @prosessor ||= SlackMarkdown::Processor.new(
-        asset_root: '/assets',
-        cushion_link: 'https://slack-redir.net/link?url='
+        asset_root: '/assets'
     )
   end
 
