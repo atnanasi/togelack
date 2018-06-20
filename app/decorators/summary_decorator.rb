@@ -15,7 +15,7 @@ class SummaryDecorator < Draper::Decorator
     return '' unless object.description
     safe_html = h.html_escape(object.description.to_s)
     safe_html.gsub!(/https?:\/\/[^\s]+/) do |match|
-      "<a href=\"https://slack-redir.net/link?url=#{h.html_escape match.to_s}\">#{match}</a>"
+      "<a href=\"#{match.to_s}\">#{match}</a>"
     end
     h.simple_format(safe_html)
   rescue => e
