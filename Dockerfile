@@ -3,6 +3,5 @@ WORKDIR /usr/src/app
 COPY Gemfile* ./
 RUN bundle install
 COPY . .
-RUN rake assets:precompile
 EXPOSE 3000
-CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+CMD rake assets:precompile && bundle exec puma -C config/puma.rb

@@ -16,8 +16,10 @@ services:
       SLACK_CHANNEL: notification_channel
       SLACK_ICON: https://raw.githubusercontent.com/rutan/togelack/master/togelack.png
       PRIVATE_MODE: "false"
-      MONGO_URL: mongodb://mongodb:27017/togelack
+      MONGO_URL: mongodb://mongo:27017/togelack
       REDIS_URL: redis://redis:6379
+    volumes:
+      - togelack-data:/usr/src/app/public/assets
     restart: always
     depends_on:
       - mongo
@@ -26,7 +28,7 @@ services:
   mongo:
     image: mongo:latest
     volumes:
-      - ./data/mongo:/data/db
+      - mongo-data:/data/db
     environment:
       MONGO_DATA_DIR: /data/db
       MONGO_LOG_DIR: /dev/null
@@ -34,5 +36,12 @@ services:
   redis:
     image: redis:latest
     volumes:
-      - ./data/redis:/data
+      - redis-data:/data
     restart: always
+volumes:
+  togelack-data:
+    driver: local
+  mongo-data:
+    driver: local
+  redis-data:
+    driver: local
