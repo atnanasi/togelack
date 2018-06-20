@@ -1,0 +1,38 @@
+version: "2"
+services:
+  togelack:
+    build: .
+    ports:
+      - 3000:3000
+    environment:
+      SECRET_KEY_BASE: SOME_RANDOMIZED_KEY
+      RAILS_ENV: production
+      MONGOID_ENV: production
+      SLACK_TOKEN: xoxp-1234-5678-9012-abcd
+      SLACK_CLIENT_ID: "1234.5678"
+      SLACK_CLIENT_SECRET: cafebabe
+      SLACK_TEAM_ID: TEAMID
+      SLACK_TEAM_NAME: team-domain-name
+      SLACK_CHANNEL: notification_channel
+      SLACK_ICON: https://raw.githubusercontent.com/rutan/togelack/master/togelack.png
+      PRIVATE_MODE: "false"
+      MONGO_URL: mongodb://mongodb:27017/togelack
+      REDIS_URL: redis://redis:6379
+    restart: always
+    depends_on:
+      - mongo
+      - redis
+    restart: always
+  mongo:
+    image: mongo:latest
+    volumes:
+      - ./data/mongo:/data/db
+    environment:
+      MONGO_DATA_DIR: /data/db
+      MONGO_LOG_DIR: /dev/null
+    restart: always
+  redis:
+    image: redis:latest
+    volumes:
+      - ./data/redis:/data
+    restart: always
