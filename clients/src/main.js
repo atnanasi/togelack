@@ -93,6 +93,8 @@ class EditApp extends Vue {
                             data: {url: permalink},
                             success: (resp) => {
                                 this.nowLoading = false
+                                if (resp.is_private)
+                                    alert('プライベートなチャンネルの投稿です')
                                 loadMessages.splice(0, loadMessages.length)
                                 for (let i = 0; i < resp.result.length; ++i) {
                                     loadMessages.push(resp.result[i])
