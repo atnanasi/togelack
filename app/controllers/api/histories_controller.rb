@@ -11,7 +11,10 @@ module API
       chs = Services::CacheHistoryService.new(client)
       messages = chs.cache(params[:url])
 
-      render json: {result: MessageDecorator.decorate_collection(messages)}, root: nil
+      archive_url = SlackSupport::ArchiveURL.new(params[:url])
+      is_private = archive_url.channel.start_with?("G")
+
+      render json: {result: MessageDecorator.decorate_collection(messages), is_private: is_private}, root: nil
     end
   end
 end
