@@ -6,6 +6,7 @@ class User
   field :is_admin, type: Boolean
   field :last_fetched_at, type: DateTime
   has_many :summaries
+  has_and_belongs_to_many :groups
   index({ uid: 1 }, {})
   index({ name: 1 }, {})
 
