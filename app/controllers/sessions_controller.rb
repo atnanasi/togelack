@@ -15,6 +15,18 @@ class SessionsController < ApplicationController
     user.is_admin = auth.extra.user_info['user']['is_admin']
     user.save!
 
+    client = Slack::Client.new(token: ENV['SLACK_TOKEN'])
+
+    channels_list = client.channels_list()['channels']
+    channels_list.each do |channel|
+      Group.find_or_fetch(client, channel["id"])
+    end
+
+    groups_list = client.groups_list()['groups']
+    groups_list.each do |group|
+      Group.find_or_fetch(client, group["id"])
+    end
+
     session[:user_id] = user.uid
     session[:token] = auth.credentials.token
 
