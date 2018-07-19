@@ -20,43 +20,11 @@ class Group
   end
 
   def self.fetch(client, gid)
-    channel = Rails.cache.fetch("channels##{gid}", expires_in: 1.hours) do
-      hit = nil
-      channels = client.channels_list()['channels']
-      channels.each do |ch|
-        if ch['id']==gid
-          hit = ch
-        end
-        Rails.cache.write("channels##{ch['id']}", ch)
-      end
-      hit
-    end
-    group = Rails.cache.fetch("groups##{gid}", expires_in: 1.hours) do
-      hit = nil
-      groups = client.groups_list()['groups']
-      groups.each do |gr|
-        if gr['id']==gid
-          hit = gr
-        end
-        Rails.cache.write("groups##{gr['id']}", gr)
-      end
-      hit
-    end
-
-    if !channel.nil?
-      raw = channel
-      is_private = false
-    elsif !group.nil?
-      raw = group
-      is_private = true
-    else
-      return nil
-    end
-
+    raw = self.channel_data(client, gid)
     new_group = Group.create(
       gid: raw['id'],
       name: raw['name'],
-      is_private: is_private,
+      is_private: raw['is_group'],
       last_fetched_at: Time.now,
     )
     raw['members'].each do |member|
@@ -66,38 +34,7 @@ class Group
   end
 
   def fetch(client)
-    channel = Rails.cache.fetch("channels##{gid}", expires_in: 1.hours) do
-      hit = nil
-      channels = client.channels_list()['channels']
-      channels.each do |ch|
-        if ch['id']==gid
-          hit = ch
-        end
-        Rails.cache.write("channels##{ch['id']}", ch)
-      end
-      hit
-    end
-    group = Rails.cache.fetch("groups##{gid}", expires_in: 1.hours) do
-      hit = nil
-      groups = client.groups_list()['groups']
-      groups.each do |gr|
-        if gr['id']==gid
-          hit = gr
-        end
-        Rails.cache.write("groups##{gr['id']}", gr)
-      end
-      hit
-    end
-
-    if !channel.nil?
-      raw = channel
-      is_private = false
-    elsif !group.nil?
-      raw = group
-      is_private = true
-    else
-      return
-    end
+    raw = self.channel_data(client, gid)
 
     self.update(
       name: raw['name'],
@@ -107,5 +44,39 @@ class Group
       self.users << User.where(uid: member)
     end
     self.save
+  end
+
+  def self.channel_data(client, gid)
+    if gid[0]=='C'
+      channel = Rails.cache.fetch("channels##{gid}", expires_in: 1.hours) do
+        hit = nil
+        channels = client.channels_list()['channels']
+        channels.each do |ch|
+          if ch['id']==gid
+            hit = ch
+            hit['is_group'] = false
+          end
+          Rails.cache.write("channels##{ch['id']}", ch)
+        end
+        hit
+      end
+      return channel
+    elsif gid[0]=='G'
+      group = Rails.cache.fetch("groups##{gid}", expires_in: 1.hours) do
+        hit = nil
+        groups = client.groups_list()['groups']
+        groups.each do |gr|
+          if gr['id']==gid
+            hit = gr
+            hit['is_group'] = true
+          end
+          Rails.cache.write("groups##{gr['id']}", gr)
+        end
+        hit
+      end
+      return group
+    else
+      return nil
+    end
   end
 end
