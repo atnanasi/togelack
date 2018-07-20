@@ -19,16 +19,6 @@ class SessionsController < ApplicationController
 
     client = Slack::Client.new(token: ENV['SLACK_TOKEN'])
 
-    channels_list = client.channels_list()['channels']
-    channels_list.each do |channel|
-      Group.find_or_fetch(client, channel["id"])
-    end
-
-    groups_list = client.groups_list()['groups']
-    groups_list.each do |group|
-      Group.find_or_fetch(client, group["id"])
-    end
-
     session[:user_id] = user.uid
     session[:token] = auth.credentials.token
 
