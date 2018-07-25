@@ -38,6 +38,7 @@ class Summary
     self.groups.each do |group|
       return true if group.users.include?(user)
     end
+    false
   end
 
   private
