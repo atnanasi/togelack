@@ -50,7 +50,7 @@ class SummariesController < ApplicationController
   def update
     raise 'permission error' unless @summary.user == @current_user || @summary.belongs?(@current_user)
     client = Slack::Client.new(token: ENV['SLACK_TOKEN'])
-    @summary.update(summary_params)
+    @summary.update(summary_params.dup.delete([:user]))
     @summary.groups = @summary.messages.map do |message|
        Group.find_or_fetch(client, message.channel)
     end
