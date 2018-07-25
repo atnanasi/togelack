@@ -36,7 +36,6 @@ class Summary
 
   def belongs? (user)
     self.groups.each do |group|
-      puts group.name
       return true if group.users.include?(user)
     end
   end
