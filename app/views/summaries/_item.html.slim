@@ -41,13 +41,15 @@
         - message.attachment_items.each do |attachment_item|
           = render('/summaries/attachment', attachment_item: attachment_item)
 
-    - if @current_user && (@current_user == summary.user || @current_user.admin?)
+    - if @current_user && (@current_user == summary.user || @current_user.admin? || summary.belongs?(@current_user))
       ul.uk-subnav.uk-text-right.uk-margin-top
-        - if @current_user && @current_user == summary.user
+        li
+        - if @current_user && (@current_user == summary.user || summary.belongs?(@current_user))
           li
             a href=edit_summary_path(summary)
               i.fa.fa-pencil
               | &nbsp;編集
+        - if @current_user && @current_user == summary.user
           li
             a href=summary_path(summary) data-method='delete' data-confirm='本当に削除してもよろしいですか？'
               i.fa.fa-remove

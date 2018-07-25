@@ -49,7 +49,7 @@ class SummariesController < ApplicationController
   end
 
   def update
-    raise 'permission error' unless @summary.user == @current_user
+    raise 'permission error' unless @summary.user == @current_user || @summary.belongs?(@current_user)
     client = Slack::Client.new(token: ENV['SLACK_TOKEN'])
     @summary.update(summary_params)
     @summary.messages.each do |message|

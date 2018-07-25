@@ -34,6 +34,13 @@ class Summary
     any_of({ :title => /.*#{text}.*/ }, message_ids)
   end
 
+  def belongs? (user)
+    self.groups.each do |group|
+      puts group.name
+      return true if group.users.include?(user)
+    end
+  end
+
   private
 
   def set_default_params

@@ -20,8 +20,10 @@ class Group
   end
 
   def self.fetch(client, gid)
-    raw = self.channel_data(client, gid)
-    new_group = Group.create(
+    new_group = Group.create()
+    raw = new_group.channel_data(client, gid)
+
+    new_group.update(
       gid: raw['id'],
       name: raw['name'],
       is_private: raw['is_group'],
@@ -46,7 +48,8 @@ class Group
     self.save
   end
 
-  def self.channel_data(client, gid)
+
+  def channel_data(client, gid)
     if gid[0]=='C'
       channel = Rails.cache.fetch("channels##{gid}", expires_in: 1.hours) do
         hit = nil
