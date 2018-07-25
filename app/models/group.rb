@@ -12,7 +12,7 @@ class Group
   def self.find_or_fetch(client, gid)
     group = self.where(gid: gid).first
     if group
-      group.fetch(client) unless (group.last_fetched_at && group.last_fetched_at > 24.hours.ago)
+      group.fetch(client) unless (group.last_fetched_at && group.last_fetched_at > 6.hours.ago)
       group
     else
       self.fetch(client, gid)
