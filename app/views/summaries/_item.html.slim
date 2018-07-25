@@ -43,7 +43,12 @@
 
     - if @current_user && (@current_user == summary.user || @current_user.admin? || summary.belongs?(@current_user))
       ul.uk-subnav.uk-text-right.uk-margin-top
-        li
+        - summary.groups.each do |group|
+          li
+            = group.name
+            = group.gid
+            = group.users.include?(@current_user)
+
         - if @current_user && (@current_user == summary.user || summary.belongs?(@current_user))
           li
             a href=edit_summary_path(summary)

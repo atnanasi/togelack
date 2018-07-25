@@ -29,8 +29,8 @@ class Group
       is_private: raw['is_group'],
       last_fetched_at: Time.now,
     )
-    raw['members'].each do |member|
-      new_group.users << User.where(uid: member)
+    new_group.users = raw['members'].map do |member|
+      User.where(uid: member)
     end
     new_group.save
   end
@@ -38,14 +38,14 @@ class Group
   def fetch(client)
     raw = self.channel_data(client, gid)
 
+    self.users = raw['members'].map do |member|
+      User.where(uid: member)
+    end
+    self.save
     self.update(
       name: raw['name'],
       last_fetched_at: Time.now,
     )
-    raw['members'].each do |member|
-      self.users << User.where(uid: member)
-    end
-    self.save
   end
 
 

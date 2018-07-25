@@ -24,10 +24,9 @@ class SummariesController < ApplicationController
   def create
     client = Slack::Client.new(token: ENV['SLACK_TOKEN'])
     @summary = Summary.new(summary_params)
-    @summary.messages.each do |message|
+    @summary.groups = @summary.messages.map do |message|
       Group.find_or_fetch(client, message.channel)
-      @summary.groups << Group.where(gid: message.channel)
-    end
+   end
 
     if @summary.save
       if ENV['SLACK_CHANNEL']
@@ -52,9 +51,8 @@ class SummariesController < ApplicationController
     raise 'permission error' unless @summary.user == @current_user || @summary.belongs?(@current_user)
     client = Slack::Client.new(token: ENV['SLACK_TOKEN'])
     @summary.update(summary_params)
-    @summary.messages.each do |message|
-      Group.find_or_fetch(client, message.channel)
-      @summary.groups << Group.where(gid: message.channel)
+    @summary.groups = @summary.messages.map do |message|
+       Group.find_or_fetch(client, message.channel)
     end
     if @summary.save
       render json: {result: @summary.decorate}, root: nil
