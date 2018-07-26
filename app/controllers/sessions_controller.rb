@@ -1,5 +1,3 @@
-require 'slack'
-
 class SessionsController < ApplicationController
   skip_before_action :require_login_in_private
 
@@ -16,8 +14,6 @@ class SessionsController < ApplicationController
     user.avatar_url = auth['info']['image']
     user.is_admin = auth.extra.user_info['user']['is_admin']
     user.save!
-
-    client = Slack::Client.new(token: ENV['SLACK_TOKEN'])
 
     session[:user_id] = user.uid
     session[:token] = auth.credentials.token
