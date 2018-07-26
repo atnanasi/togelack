@@ -13,6 +13,12 @@
           | #{summary.user.name}
       - else
         | -
+    - if summary.editor
+      .summary-list-item-editor
+        | edited by&nbsp;
+        a href=user_path(summary.editor)
+          img src=summary.editor.avatar_url title=summary.editor.name
+          | #{summary.editor.name}
 
   hr.summary-list-item-split
 

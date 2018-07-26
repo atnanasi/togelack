@@ -5,6 +5,7 @@ class Summary
   field :title, type: String
   field :description, type: String
   belongs_to :user
+  belongs_to :editor, :class_name => "User"
   has_and_belongs_to_many :groups
   has_and_belongs_to_many :messages
 
