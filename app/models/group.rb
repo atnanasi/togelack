@@ -33,6 +33,7 @@ class Group
       User.where(uid: member)
     end
     new_group.save
+    return new_group
   end
 
   def fetch(client)
@@ -46,6 +47,7 @@ class Group
       name: raw['name'],
       last_fetched_at: Time.now,
     )
+    return self
   end
 
 
