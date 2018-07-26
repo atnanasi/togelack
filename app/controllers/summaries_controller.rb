@@ -47,6 +47,7 @@ class SummariesController < ApplicationController
   end
 
   def show
+    raise '403' if @summary.contain_private && !@summary.belongs?(@current_user)
   end
 
   def edit
