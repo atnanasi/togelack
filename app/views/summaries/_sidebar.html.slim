@@ -23,6 +23,8 @@
     - Summary.newest.limit(20).each do |summary|
       li
         a href=summary_path(summary)
+          - if summary.contain_private
+            i.fa.fa-lock>
           = summary.title
     li.uk-text-right
       a href=list_summaries_path

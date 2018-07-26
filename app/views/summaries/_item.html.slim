@@ -5,6 +5,8 @@
         img src=summary.user.avatar_url title=summary.user.name
     h3.summary-list-item-title
       a href=summary_path(summary)
+        - if summary.contain_private
+          i.fa.fa-lock>
         = (summary.title && summary.title.size > 0 ? summary.title : 'no title')
     .summary-list-item-owner
       - if summary.user
