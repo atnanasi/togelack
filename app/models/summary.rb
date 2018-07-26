@@ -4,6 +4,7 @@ class Summary
 
   field :title, type: String
   field :description, type: String
+  field :contain_private, type: Boolean
   belongs_to :user
   belongs_to :editor, :class_name => "User"
   has_and_belongs_to_many :groups

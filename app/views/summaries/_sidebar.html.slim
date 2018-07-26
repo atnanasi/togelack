@@ -21,11 +21,12 @@
       | 最近作成されたまとめ
   ul.uk-nav
     - Summary.newest.limit(20).each do |summary|
-      li
-        a href=summary_path(summary)
-          - if summary.contain_private
-            i.fa.fa-lock>
-          = summary.title
+      - if !(summary.contain_private && !summary.belongs?(@current_user))
+        li
+          a href=summary_path(summary)
+            - if summary.contain_private
+              i.fa.fa-lock>
+            = summary.title
     li.uk-text-right
       a href=list_summaries_path
         | まとめ一覧

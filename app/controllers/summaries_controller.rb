@@ -26,9 +26,12 @@ class SummariesController < ApplicationController
     assign_params = summary_params.dup
     assign_params[:editor] = assign_params[:user]
     @summary = Summary.new(assign_params)
+    @summary.contain_private = false
     @summary.groups = @summary.messages.map do |message|
-      Group.find_or_fetch(client, message.channel)
-   end
+      group = Group.find_or_fetch(client, message.channel)
+      @summary.contain_private = true if group.is_private
+      group
+    end
 
     if @summary.save
       if ENV['SLACK_CHANNEL']
@@ -57,7 +60,9 @@ class SummariesController < ApplicationController
     assign_params.delete(:user)
     @summary.update(assign_params)
     @summary.groups = @summary.messages.map do |message|
-       Group.find_or_fetch(client, message.channel)
+      group = Group.find_or_fetch(client, message.channel)
+      @summary.contain_private = true if group.is_private
+      group
     end
     if @summary.save
       render json: {result: @summary.decorate}, root: nil
