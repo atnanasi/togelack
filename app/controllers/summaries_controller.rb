@@ -24,7 +24,7 @@ class SummariesController < ApplicationController
   def create
     client = Slack::Client.new(token: ENV['SLACK_TOKEN'])
     assign_params = summary_params.dup
-    assign_params[:editor] = assign_params[:user]
+    assign_params[:user]
     @summary = Summary.new(assign_params)
     @summary.contain_private = false
     @summary.groups = @summary.messages.map do |message|
