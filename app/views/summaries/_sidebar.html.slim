@@ -21,7 +21,7 @@
       | 最近作成されたまとめ
   ul.uk-nav
     - Summary.newest.limit(20).each do |summary|
-      - if !(summary.contain_private && !summary.belongs?(@current_user))
+      - if !(summary.contain_private && !summary.can_view?(@current_user))
         li
           a href=summary_path(summary)
             - if summary.contain_private

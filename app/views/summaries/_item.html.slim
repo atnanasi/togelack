@@ -49,9 +49,9 @@
         - message.attachment_items.each do |attachment_item|
           = render('/summaries/attachment', attachment_item: attachment_item)
 
-    - if @current_user && (@current_user == summary.user || @current_user.admin? || summary.belongs?(@current_user))
+    - if @current_user && (@current_user == summary.user || @current_user.admin? || summary.can_edit?(@current_user))
       ul.uk-subnav.uk-text-right.uk-margin-top
-        - if @current_user && (@current_user == summary.user || summary.belongs?(@current_user))
+        - if @current_user && (@current_user == summary.user || summary.can_edit?(@current_user))
           li
             a href=edit_summary_path(summary)
               i.fa.fa-pencil

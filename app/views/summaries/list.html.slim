@@ -3,7 +3,7 @@
     .uk-width-2-3
       - if @summaries.present?
         - @summaries.each do |summary|
-          - if !(summary.contain_private && !summary.belongs?(@current_user))
+          - if !(summary.contain_private && !summary.can_view?(@current_user))
             = render 'item_short', summary: summary
         == paginate(@summaries)
       - else

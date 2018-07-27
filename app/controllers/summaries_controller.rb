@@ -47,14 +47,15 @@ class SummariesController < ApplicationController
   end
 
   def show
-    raise '403' if @summary.contain_private && !@summary.belongs?(@current_user)
+    raise '403' unless @summary.can_view?(@current_user)
   end
 
   def edit
+    raise '403' unless @summary.can_edit?(@current_user)
   end
 
   def update
-    raise 'permission error' unless @summary.user == @current_user || @summary.belongs?(@current_user)
+    raise 'permission error' unless @summary.user == @current_user || @summary.can_edit?(@current_user)
     client = Slack::Client.new(token: ENV['SLACK_TOKEN'])
     assign_params = summary_params.dup
     assign_params[:editor] = assign_params[:user]

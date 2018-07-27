@@ -36,11 +36,18 @@ class Summary
     any_of({ :title => /.*#{text}.*/ }, message_ids)
   end
 
-  def belongs? (user)
-    self.groups.each do |group|
-      return true if group.users.include?(user)
+  def can_view? (user)
+    self.groups.select{|group| group.is_private }.each do |group|
+      return false unless group.users.include?(user)
     end
-    false
+    return true
+  end
+
+  def can_edit? (user)
+    self.groups.each do |group|
+      return false unless group.users.include?(user)
+    end
+    return true
   end
 
   private
