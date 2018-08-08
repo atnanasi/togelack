@@ -52,7 +52,6 @@ module Services
         )
         message['channel_name'] = c_name
         raw.each { |k, v| message[k] = v }
-        message.save
         message
       }.reverse
     end

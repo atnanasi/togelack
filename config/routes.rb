@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :histories, only: [:index]
+    resources :comment, only: [:index]
   end
 
   get '@:name', to: 'users#show', as: 'user'

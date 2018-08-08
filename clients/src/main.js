@@ -106,11 +106,8 @@ class EditApp extends Vue {
                     }
                 },
                 onSubmit: (e, title, description, messages) => {
-                    let messageIDs = messages.map((n) => {
-                        return n.id
-                    })
                     e.preventDefault()
-                    if (messageIDs.length == 0) {
+                    if (messages.length == 0) {
                         alert('まとめるメッセージを選択してください。')
                         return
                     }
@@ -130,7 +127,7 @@ class EditApp extends Vue {
                             authenticity_token: $('meta[name="csrf-token"]').val(),
                             title: title,
                             description: description,
-                            messages: messageIDs
+                            messages: messages
                         },
                         success: (data) => {
                             location.href = data.result.path

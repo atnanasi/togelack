@@ -86,9 +86,20 @@ class SummariesController < ApplicationController
   end
 
   def summary_params
-    n = params.permit(:title, :description, :messages => [])
+    n = params.permit(:title, :description, messages: [:channel, :channel_name, :permalink])
     n[:user] = @current_user
-    n[:messages] = n[:messages].uniq.reject(&:empty?).map { |n| Message.find(n) }
+    n[:messages] = params[:messages].map do |raw|
+      mes = raw[1].except(:username, :format_text, :avatar_url, :created_at, :created_time)
+
+      # message
+      message = Message.find_or_initialize_by(
+        channel: mes.delete(:channel),
+        ts: mes.delete(:ts)
+      )
+      mes.each { |k, v| message[k] = v }
+      message.save
+      message
+    end
     n
   end
 end
