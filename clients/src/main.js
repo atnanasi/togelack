@@ -85,24 +85,44 @@ class EditApp extends Vue {
                 },
                 onPermalink: (e, permalink, loadMessages) => {
                     e.preventDefault()
-                    if (permalink && permalink.match(/^https:\/\//)) {
-                        this.nowLoading = true
-                        $.ajax({
-                            type: 'get',
-                            url: '/api/histories.json',
-                            data: {url: permalink},
-                            success: (resp) => {
-                                this.nowLoading = false
-                                loadMessages.splice(0, loadMessages.length)
-                                for (let i = 0; i < resp.result.length; ++i) {
-                                    loadMessages.push(resp.result[i])
+                    if (permalink) {
+                        if (permalink.match(/^https:\/\//)) {
+                            this.nowLoading = true
+                            $.ajax({
+                                type: 'get',
+                                url: '/api/histories.json',
+                                data: {url: permalink},
+                                success: (resp) => {
+                                    this.nowLoading = false
+                                    loadMessages.splice(0, loadMessages.length)
+                                    for (let i = 0; i < resp.result.length; ++i) {
+                                        loadMessages.push(resp.result[i])
+                                    }
+                                },
+                                error: (resp) => {
+                                    this.nowLoading = false
+                                    alert('取得できませんでした O_o')
                                 }
-                            },
-                            error: (resp) => {
-                                this.nowLoading = false
-                                alert('取得できませんでした O_o')
-                            }
-                        })
+                            })
+                        } else {
+                            this.nowLoading = true
+                            $.ajax({
+                                type: 'get',
+                                url: '/api/comment.json',
+                                data: {text: permalink},
+                                success: (resp) => {
+                                    this.nowLoading = false
+                                    loadMessages.splice(0, loadMessages.length)
+                                    for (let i = 0; i < resp.result.length; ++i) {
+                                        loadMessages.push(resp.result[i])
+                                    }
+                                },
+                                error: (resp) => {
+                                    this.nowLoading = false
+                                    alert('取得できませんでした O_o')
+                                }
+                            })
+                        }
                     }
                 },
                 onSubmit: (e, title, description, messages) => {

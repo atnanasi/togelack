@@ -24,13 +24,16 @@ class SummariesController < ApplicationController
   def create
     client = Slack::Client.new(token: ENV['SLACK_TOKEN'])
     assign_params = summary_params.dup
-    assign_params[:user]
     @summary = Summary.new(assign_params)
     @summary.contain_private = false
     @summary.groups = @summary.messages.map do |message|
-      group = Group.find_or_fetch(client, message.channel)
-      @summary.contain_private = true if group.is_private
-      group
+      if message.type == "message"
+        group = Group.find_or_fetch(client, message.channel)
+        @summary.contain_private = true if group.is_private
+        group
+      else
+        nil
+      end
     end
 
     if @summary.save
@@ -58,13 +61,16 @@ class SummariesController < ApplicationController
     raise 'permission error' unless @summary.user == @current_user || @summary.can_edit?(@current_user)
     client = Slack::Client.new(token: ENV['SLACK_TOKEN'])
     assign_params = summary_params.dup
-    assign_params[:editor] = assign_params[:user]
-    assign_params.delete(:user)
+    assign_params[:editor] = assign_params.delete(:user)
     @summary.update(assign_params)
     @summary.groups = @summary.messages.map do |message|
-      group = Group.find_or_fetch(client, message.channel)
-      @summary.contain_private = true if group.is_private
-      group
+      if message.type == "message"
+        group = Group.find_or_fetch(client, message.channel)
+        @summary.contain_private = true if group.is_private
+        group
+      else
+        nil
+      end
     end
     if @summary.save
       render json: {result: @summary.decorate}, root: nil
@@ -89,13 +95,21 @@ class SummariesController < ApplicationController
     n = params.permit(:title, :description, messages: [:channel, :channel_name, :permalink])
     n[:user] = @current_user
     n[:messages] = params[:messages].map do |raw|
-      mes = raw[1].except(:username, :format_text, :avatar_url, :created_at, :created_time)
+      mes = raw[1].except(:permalink, :me?, :username, :format_text, :avatar_url, :created_at, :created_time)
 
-      # message
-      message = Message.find_or_initialize_by(
-        channel: mes.delete(:channel),
-        ts: mes.delete(:ts)
-      )
+      if mes[:type] == "message"
+        # message
+        message = Message.find_or_initialize_by(
+          channel: mes[:channel],
+          ts: mes[:ts]
+        )
+      else
+        # comment
+        message = Message.find_or_initialize_by(
+          user: mes[:user],
+          text: mes[:text]
+        )
+      end
       mes.each { |k, v| message[k] = v }
       message.save
       message

@@ -1,4 +1,5 @@
 require 'slack'
+require 'date'
 
 module API
   class CommentController < ApplicationController
@@ -10,10 +11,10 @@ module API
       comment = [Message.find_or_initialize_by(
         user: @current_user["uid"],
         text: params[:text],
-        type: "message",
-        channel: "",
-        channel_name: "",
-        ts: "",
+        type: "comment",
+        channel: "togelack",
+        channel_name: "togelack",
+        ts: Time.now.to_i.to_s,
       )]
       render json: {result: MessageDecorator.decorate_collection(comment)}, root: nil
     end
